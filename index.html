@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAETHFLEX • Official Collection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+        
+        :root { --gold: #d4af37; --dark-gold: #b8860b; }
+        
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        .logo-font { font-family: 'Space Grotesk', sans-serif; }
+
+        .gold-glow { 
+            text-shadow: 0 0 20px #d4af37, 
+                        0 0 40px #b8860b, 
+                        0 0 60px #d4af37; 
+        }
+
+        .lightbox {
+            animation: lightboxPop 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+        
+        @keyframes lightboxPop {
+            from { opacity: 0; transform: scale(0.92) translateY(40px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-black text-zinc-200 overflow-hidden">
+
+    <!-- MINIMAL NAVBAR -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-lg border-b border-amber-900">
+        <div class="max-w-screen-2xl mx-auto px-8 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-x-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-yellow-600 rounded-2xl flex items-center justify-center text-black font-bold text-3xl logo-font">F</div>
+                <span class="text-4xl font-bold tracking-tighter logo-font gold-glow">FAETHFLEX</span>
+            </div>
+            <a href="https://opensea.io/collection/givethanks" target="_blank" 
+               class="text-sm font-medium hover:text-amber-400 transition-colors flex items-center gap-x-2">
+                <i class="fa-brands fa-opensea"></i> OPENSEA
+            </a>
+        </div>
+    </nav>
+
+    <!-- LANDING / ENTRY SCREEN -->
+    <div class="min-h-screen flex items-center justify-center relative">
+        <!-- Background subtle grid -->
+        <div class="absolute inset-0 bg-[radial-gradient(#222_1px,transparent_1px)] [background-size:40px_40px] opacity-30"></div>
+        
+        <div class="text-center z-10 px-6 max-w-2xl">
+            <div class="inline-flex items-center gap-x-3 bg-white/5 backdrop-blur-md px-8 py-3 rounded-3xl border border-amber-400/20 mb-12">
+                <div class="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span class="text-sm font-medium tracking-widest text-amber-400">10 UNIQUE NFTs • LIVE ON OPENSEA</span>
+            </div>
+            
+            <h1 class="text-7xl md:text-8xl font-bold logo-font tracking-[-4px] leading-none gold-glow mb-6">
+                THE VAULT
+            </h1>
+            <p class="text-2xl text-amber-100/90 mb-16">
+                Browse the entire FAETHFLEX collection.<br>
+                Images loaded dynamically from <span class="font-mono text-amber-400">/images/</span>
+            </p>
+            
+            <button onclick="startGallery()"
+                    class="group relative px-16 py-8 text-2xl font-bold bg-gradient-to-r from-amber-400 to-yellow-500 text-black rounded-3xl overflow-hidden transition-all hover:scale-105 flex items-center gap-x-4 mx-auto">
+                <span class="relative z-10 flex items-center gap-x-3">
+                    ENTER THE GALLERY
+                    <i class="fa-solid fa-arrow-right group-active:translate-x-2 transition-transform"></i>
+                </span>
+            </button>
+            
+            <div class="mt-20 text-xs text-amber-400/50 font-mono">
+                Images auto-detected • No hard-coded count
+            </div>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX (the ONLY way to view images) -->
+    <div id="lightbox" class="hidden fixed inset-0 bg-black z-[100] flex items-center justify-center p-4">
+        <div class="lightbox w-full max-w-5xl bg-zinc-950 rounded-3xl overflow-hidden border border-amber-400/30 shadow-2xl">
+            
+            <!-- Header -->
+            <div class="flex items-center justify-between px-8 py-5 border-b border-amber-900">
+                <div class="flex items-center gap-x-4">
+                    <div class="w-8 h-8 bg-gradient-to-br from-amber-400 to-yellow-600 rounded-2xl flex items-center justify-center text-black font-bold logo-font text-xl">F</div>
+                    <div>
+                        <div id="lbTitle" class="font-bold text-xl"></div>
+                        <div id="lbId" class="font-mono text-amber-400 text-sm"></div>
+                    </div>
+                </div>
+                <button onclick="closeLightbox()" 
+                        class="text-5xl leading-none text-amber-400 hover:text-white transition-colors">×</button>
+            </div>
+
+            <!-- Image -->
+            <div class="relative bg-black p-8 md:p-12 flex items-center justify-center min-h-[60vh]">
+                <img id="lbImage" 
+                     class="max-h-[70vh] max-w-full rounded-2xl shadow-2xl object-contain" 
+                     alt="">
+                
+                <!-- Loading indicator -->
+                <div id="loading" class="hidden absolute inset-0 flex items-center justify-center">
+                    <div class="w-8 h-8 border-4 border-amber-400 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="px-8 py-6 border-t border-amber-900 flex items-center justify-between bg-zinc-950">
+                <button onclick="prevImage()" 
+                        class="flex items-center gap-x-3 text-amber-400 hover:text-white font-medium transition-colors">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>PREVIOUS</span>
+                </button>
+                
+                <div onclick="copyEndpoint()" 
+                     class="cursor-pointer text-center">
+                    <div class="text-[10px] uppercase tracking-[2px] text-amber-400/70 mb-1">DIRECT ENDPOINT</div>
+                    <div id="lbUrl" 
+                         class="font-mono text-xs bg-black px-6 py-3 rounded-2xl border border-amber-400/30 hover:border-amber-400 transition-colors break-all max-w-xs md:max-w-md">
+                    </div>
+                </div>
+                
+                <button onclick="nextImage()" 
+                        class="flex items-center gap-x-3 text-amber-400 hover:text-white font-medium transition-colors">
+                    <span>NEXT</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================== CONFIG (CHANGE THESE) ======================
+        const CONFIG = {
+            githubUsername: "FAETHFLEX",     // ← YOUR GITHUB USERNAME
+            repoName: "faethflex-nft",       // ← YOUR REPO NAME (lowercase)
+            imageFolder: "images/",
+            prefix: "nft-",
+            padding: 4,
+            extension: ".png"                // change to .jpg if needed
+        };
+
+        const BASE_URL = `https://${CONFIG.githubUsername}.github.io/${CONFIG.repoName}/`;
+        const IMAGE_BASE = BASE_URL + CONFIG.imageFolder;
+
+        // ====================== DYNAMIC IMAGE LOADING ======================
+        let images = [];        // { id: number, url: string, endpoint: string }
+        let currentIndex = 0;
+
+        function loadNextImage(i) {
+            const padded = i.toString().padStart(CONFIG.padding, '0');
+            const filename = `${CONFIG.prefix}${padded}${CONFIG.extension}`;
+            const url = IMAGE_BASE + filename;
+
+            const testImg = new Image();
+            testImg.onload = () => {
+                images.push({
+                    id: i,
+                    url: url,
+                    endpoint: url
+                });
+                loadNextImage(i + 1);   // keep going until 404
+            };
+            testImg.onerror = () => {
+                console.log(`%c✅ FAETHFLEX Lightbox-Only Gallery ready\nDetected ${images.length} images automatically`, 
+                            'color:#d4af37; font-family:monospace; font-size:13px');
+                if (images.length > 0) {
+                    // Auto-open first image after detection
+                    setTimeout(() => {
+                        if (document.getElementById('lightbox').classList.contains('hidden')) {
+                            startGallery();
+                        }
+                    }, 800);
+                }
+            };
+            testImg.src = url;
+        }
+
+        // ====================== LIGHTBOX CONTROLS ======================
+        function openLightbox(index) {
+            currentIndex = Math.max(0, Math.min(index, images.length - 1));
+            updateLightbox();
+            const lb = document.getElementById('lightbox');
+            lb.classList.remove('hidden');
+            lb.classList.add('flex');
+        }
+
+        function updateLightbox() {
+            const imgData = images[currentIndex];
+            if (!imgData) return;
+
+            document.getElementById('lbImage').src = imgData.url;
+            document.getElementById('lbTitle').textContent = `FAETHFLEX #${imgData.id}`;
+            document.getElementById('lbId').textContent = `#${imgData.id.toString().padStart(CONFIG.padding, '0')}`;
+            document.getElementById('lbUrl').textContent = imgData.endpoint;
+        }
+
+        function closeLightbox() {
+            const lb = document.getElementById('lightbox');
+            lb.classList.add('hidden');
+            lb.classList.remove('flex');
+        }
+
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            updateLightbox();
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % images.length;
+            updateLightbox();
+        }
+
+        function copyEndpoint() {
+            const url = images[currentIndex].endpoint;
+            navigator.clipboard.writeText(url).then(() => {
+                const urlEl = document.getElementById('lbUrl');
+                const originalText = urlEl.textContent;
+                urlEl.textContent = "✅ COPIED!";
+                urlEl.style.color = "#d4af37";
+                setTimeout(() => {
+                    urlEl.textContent = originalText;
+                    urlEl.style.color = "";
+                }, 1800);
+            });
+        }
+
+        // ====================== ENTRY POINT ======================
+        function startGallery() {
+            if (images.length === 0) {
+                alert("No images detected yet.\n\nMake sure your images are in /images/ folder and named nft-0001.png etc.");
+                return;
+            }
+            openLightbox(0);   // always start at first image
+        }
+
+        // ====================== INIT ======================
+        window.onload = () => {
+            console.log('%cFAETHFLEX Lightbox-Only Gallery initialized\nAuto-detecting images from /images/...', 
+                        'color:#d4af37; font-family:monospace');
+            loadNextImage(1);   // start dynamic detection
+        };
+
+        // Keyboard shortcuts inside lightbox
+        document.addEventListener('keydown', (e) => {
+            const lb = document.getElementById('lightbox');
+            if (lb.classList.contains('hidden')) return;
+            
+            if (e.key === "ArrowLeft") prevImage();
+            if (e.key === "ArrowRight") nextImage();
+            if (e.key === "Escape") closeLightbox();
+        });
+    </script>
+</body>
+</html>
